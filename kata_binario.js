@@ -1,13 +1,67 @@
 function decodeBits(bits){
-    // ToDo: Accept 0's and 1's, return dots, dashes and spaces
-    // var prueba = bits.replace(/\b000\b/g, ' ')
-    return bits.split('000').join('   ').split('00').join('  ').split('0').join(' ').split('111').join('-').split('1').join('.').replace(/(?<! ) (?! )/g, "")
+  
+  var traduccir_0 = {
+    1: "",
+    2: "",
+    3: " ",
+    7: "   "
+  }
+  
+  var traduccir_1 = {
+    1: ".",
+    2: ".",
+    3: "-"
+  }
+  
+  var resultado = ""
+  var resultado_1 = ""
+  
+  var menor_caracter_1 = Math.min(
+    ...bits
+    .split("0")
+    .filter(e => e !== "")
+    .map(e => e.length)
+  )
+  
+  var menor_caracter_0 = Math.min(
+    ...bits
+    .split("1")
+    .filter(e => e !== "")
+    .map(e => e.length)
+  )
+  
+  for (let i = 0; i < bits.length; i++){
+    if (i > 0 && bits[i] !== bits[i - 1]){
+      resultado += "."
+    }
+    
+    resultado += bits[i]
+  }
+  
+  resultado = resultado.split(".").map(e => {
+    if (/^0+$/.test(e)){
+      resultado_1 = e.length / menor_caracter_0
+      return traduccir_0[resultado_1]
+    }
+    
+    return e
+    
+  }).map(e => {
+    if (/^1+$/.test(e)){
+      resultado_1 = e.length / menor_caracter_1
+      return traduccir_1[resultado_1]
+    }
+    
+    return e
+  }).join('')
+  
+  return resultado
 }
 
 function decodeMorse(morseCode){
-    // ToDo: Accept dots, dashes and spaces, return human-readable message
-    return morseCode.trim().split(' ').map(caracter => MORSE_CODE[caracter] || ' ').join('').replace(/(?<! ) (?! )/g, "").replace(/(?<! )  (?! )/g, " ")
+    return morseCode.trim().replace(/ {3}/g, " / ").split(' ').map(caracter => MORSE_CODE[caracter] || ' ').join('')
 }
 
-console.log(decodeMorse(decodeBits("1100110011001100000011000000111111001100111111001111110000000000000011001111110011111100111111000000110011001111110000001111110011001100000011")))
+console.log(decodeBits('110110001'))
+console.log(decodeMorse(decodeBits('110110001')))
 console.log(MORSE_CODE)
